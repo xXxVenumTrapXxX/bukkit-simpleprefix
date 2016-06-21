@@ -25,8 +25,7 @@ import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitScheduler;
 
-public class SimplePrefix extends JavaPlugin
-  implements Listener
+public class SimplePrefix extends JavaPlugin implements Listener
 {
   static String pluginName;
   static File pluginFolder;
@@ -47,7 +46,6 @@ public class SimplePrefix extends JavaPlugin
   boolean useVault = false;
   static Boolean debug;
   static Boolean allowOps;
-  static Boolean UUIDs;
 
   public void onEnable()
   {
@@ -61,15 +59,13 @@ public class SimplePrefix extends JavaPlugin
     scheduler = Bukkit.getScheduler();
     
     if (Bukkit.getOnlinePlayers().size() > 0){
-    	if (UUIDs) {
-    		for (Player p : Bukkit.getOnlinePlayers()){
-     		   uuids.put(p.getName(), p.getUniqueId().toString());
- 	    	}
+		for (Player p : Bukkit.getOnlinePlayers()){
+ 		   uuids.put(p.getName(), p.getUniqueId().toString());
     	}
     }
     
     if (autoupdate){
-    /*Updater updater = */new Updater(this, 31141, this.getFile(), Updater.UpdateType.DEFAULT, true);
+    	new Updater(this, 31141, this.getFile(), Updater.UpdateType.DEFAULT, true);
     }
     
     if (Config.config.getBoolean("Use-Vault")) setupChat();
@@ -115,8 +111,7 @@ public class SimplePrefix extends JavaPlugin
   
   @EventHandler
   public void onPreLogin(AsyncPlayerPreLoginEvent event){
-	  if (UUIDs)
-		  uuids.put(event.getName(), event.getUniqueId().toString());
+	  uuids.put(event.getName(), event.getUniqueId().toString());
   }
 
   public static void message(String message, CommandSender sender) {

@@ -92,8 +92,6 @@ public class Config
     SimplePrefix.autoupdate = Boolean.valueOf(config.getBoolean("Auto-Update"));
     SimplePrefix.debug = Config.config.getBoolean("debug-mode");
     SimplePrefix.allowOps = Config.config.getBoolean("OPs-have-all");
-    SimplePrefix.UUIDs = Config.config.getBoolean("Use-UUIDs");
-    if (!SimplePrefix.UUIDs) config.set("User.069a79f4-44e9-4726-a5be-fca90e38aaf5", null);
     plugin.saveConfig();
   }
 
@@ -191,7 +189,7 @@ public class Config
 
     if (config.get("User") != null) {
     	String data;
-      if (SimplePrefix.UUIDs && plugin.uuids.containsKey(player.getName()) && config.getConfigurationSection("User").contains(plugin.uuids.get(player.getName()))){
+      if (plugin.uuids.containsKey(player.getName()) && config.getConfigurationSection("User").contains(plugin.uuids.get(player.getName()))){
     	  data = config.getString("User." + plugin.uuids.get(player.getName()) + "." + type);
       } else {
     	  data = config.getString("User." + player.getName() + "." + type);

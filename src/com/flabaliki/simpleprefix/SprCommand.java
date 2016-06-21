@@ -9,8 +9,7 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-public class SprCommand
-  implements CommandExecutor
+public class SprCommand implements CommandExecutor
 {
 
   static HashSet<String> prefixalias = new HashSet<String>();
@@ -59,7 +58,7 @@ public class SprCommand
   }
 
   public boolean onCommand(CommandSender sender, Command comannd, String label, String[] args){
-
+	  boolean hasAll = sender.hasPermission("simpleprefix.command.*");
     if (args.length == 1)
     {
       if (helpalias.contains(args[0].toLowerCase())) {
@@ -67,7 +66,7 @@ public class SprCommand
         return true;
       }
 
-      if (((sender.hasPermission("simpleprefix.command.reload")) || (sender.hasPermission("simpleprefix.command.*"))) && (reloadalias.contains(args[0].toLowerCase()))) {
+      if ((sender.hasPermission("simpleprefix.command.reload") || hasAll) && reloadalias.contains(args[0].toLowerCase())) {
     	  plugin.config.reload();
     	  sender.sendMessage(ChatColor.AQUA + "[" + SimplePrefix.pluginName + "]" + ChatColor.WHITE + " Config reloaded.");
     	  return true;
@@ -260,39 +259,31 @@ public class SprCommand
   
   @SuppressWarnings("deprecation")
   private void setUserPrefix(final String player, final String prefix){
-	  if (!SimplePrefix.UUIDs){
-		  plugin.config.setPrefix("user", player, prefix);
+	  if (Bukkit.getOfflinePlayer(player).isOnline()){
+		  plugin.config.setPrefix("user", plugin.uuids.get(player), prefix);
 	  } else {
-		  if (Bukkit.getOfflinePlayer(player).isOnline()){
-			  plugin.config.setPrefix("user", plugin.uuids.get(player), prefix);
-		  } else {
-		        plugin.scheduler.scheduleAsyncDelayedTask(plugin, new Runnable() {
-		            @Override
-		            public void run(){
-		      		    String uuid = plugin.fetchUUID(player).toString();
-		        		plugin.config.setPrefix("user", uuid, prefix);
-		            }
-		        }, 0L);
-		  }
+	        plugin.scheduler.scheduleAsyncDelayedTask(plugin, new Runnable() {
+	            @Override
+	            public void run(){
+	      		    String uuid = plugin.fetchUUID(player).toString();
+	        		plugin.config.setPrefix("user", uuid, prefix);
+	            }
+	        }, 0L);
 	  }
   }
   
   @SuppressWarnings("deprecation")
   private void setUserSuffix(final String player, final String suffix){
-	  if (!SimplePrefix.UUIDs){
-		  plugin.config.setSuffix("user", player, suffix);
+	  if (Bukkit.getOfflinePlayer(player).isOnline()){
+		  plugin.config.setSuffix("user", plugin.uuids.get(player), suffix);
 	  } else {
-		  if (Bukkit.getOfflinePlayer(player).isOnline()){
-			  plugin.config.setSuffix("user", plugin.uuids.get(player), suffix);
-		  } else {
-		        plugin.scheduler.scheduleAsyncDelayedTask(plugin, new Runnable() {
-		            @Override
-		            public void run(){
-		            	String uuid = plugin.fetchUUID(player).toString();
-		        		plugin.config.setSuffix("user", uuid, suffix);
-		            }
-		        }, 0L);
-		  }
+	        plugin.scheduler.scheduleAsyncDelayedTask(plugin, new Runnable() {
+	            @Override
+	            public void run(){
+	            	String uuid = plugin.fetchUUID(player).toString();
+	        		plugin.config.setSuffix("user", uuid, suffix);
+	            }
+	        }, 0L);
 	  }
   }
 }
