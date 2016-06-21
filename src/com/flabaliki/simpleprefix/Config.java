@@ -1,6 +1,7 @@
 package com.flabaliki.simpleprefix;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
@@ -46,7 +47,6 @@ public class Config
 			  config.set("Auto-Update", true);
 			  config.set("debug-mode", false);
 			  config.set("OPs-have-all", true);
-			  config.set("Use-UUIDs", true);
 			  
 			  for (String key : config.getConfigurationSection("User").getKeys(false)){
 				  String uuid = plugin.fetchUUID(key).toString();
@@ -61,21 +61,17 @@ public class Config
 			  config.set("Use-Vault", false);
 			  config.set("debug-mode", false);
 			  config.set("OPs-have-all", true);
-			  config.set("Use-UUIDs", true);
 		  } else if (configversion.equals("2.3.1") || configversion.equals("2.3.2") || configversion.equals("2.3.3") || configversion.equals("2.3.4")){
 			  config.set("Use-Vault", false);
 			  config.set("debug-mode", false);
 			  config.set("OPs-have-all", true);
-			  config.set("Use-UUIDs", true);
 		  } else if (configversion.equals("2.3.5") || configversion.equals("2.4.0")){
 			  config.set("debug-mode", false);
 			  config.set("OPs-have-all", true);
-			  config.set("Use-UUIDs", true);
 		  } else if (configversion.equals("2.4.1")){
-			  config.set("Use-UUIDs", true);
 		  }
 		  config.set("bungeecord", null);
-		  config.set("Version", "2.4.2");
+		  config.set("Version", "2.5.0");
 	  }
 	  plugin.saveConfig();
 	  loadKeys();
@@ -118,17 +114,24 @@ public class Config
 	  
 	  String groupPrefix = "";
 	  String[] groups = plugin.chat.getPlayerGroups(player);
+	  ArrayList<String> groupPrefixes = new ArrayList<>();
 	  for (String group : groups){
+		  if (group == null || group.equals("")) continue;
+		  String spGroupPrefix = plugin.chat.getGroupPrefix(player.getWorld(), group);
+		  if (spGroupPrefix == null || spGroupPrefix.equals("")) continue;
+		  groupPrefixes.add(spGroupPrefix);
 		  if (SimplePrefix.multiPrefix){
-			  if (groupPrefix.equals("")) groupPrefix = plugin.chat.getGroupPrefix(player.getWorld(), group);
-			  else groupPrefix += SimplePrefix.multiPrefixSeparator + plugin.chat.getGroupPrefix(player.getWorld(), group);
+			  if (groupPrefix.equals("")) groupPrefix = spGroupPrefix;
+			  else groupPrefix += SimplePrefix.multiPrefixSeparator + spGroupPrefix;
 		  } else {
-			  groupPrefix = plugin.chat.getGroupPrefix(player.getWorld(), group);
+			  groupPrefix = spGroupPrefix;
 			  break;
 		  }
 	  }
 	  
 	  String userPrefix = plugin.chat.getPlayerPrefix(player);
+	  if (groupPrefixes.contains(userPrefix)) userPrefix = ""; // b/c sometimes Vault decides to return a group prefix as the user prefix
+	  
 	  if (userPrefix.equals("")) return groupPrefix;
 	  if (groupPrefix.equals("")) return userPrefix;
 	  if (!SimplePrefix.multiPrefix) return userPrefix;
@@ -140,17 +143,24 @@ public class Config
 	  
 	  String groupSuffix = "";
 	  String[] groups = plugin.chat.getPlayerGroups(player);
+	  ArrayList<String> groupSuffixes = new ArrayList<>();
 	  for (String group : groups){
+		  if (group == null || group.equals("")) continue;
+		  String spGroupSuffix = plugin.chat.getGroupSuffix(player.getWorld(), group);
+		  if (spGroupSuffix == null || spGroupSuffix.equals("")) continue;
+		  groupSuffixes.add(spGroupSuffix);
 		  if (SimplePrefix.multiSuffix){
-			  if (groupSuffix.equals("")) groupSuffix = plugin.chat.getGroupSuffix(player.getWorld(), group);
-			  else groupSuffix += SimplePrefix.multiSuffixSeparator + plugin.chat.getGroupSuffix(player.getWorld(), group);
+			  if (groupSuffix.equals("")) groupSuffix = spGroupSuffix;
+			  else groupSuffix += SimplePrefix.multiSuffixSeparator + spGroupSuffix;
 		  } else {
-			  groupSuffix = plugin.chat.getGroupSuffix(player.getWorld(), group);
+			  groupSuffix = spGroupSuffix;
 			  break;
 		  }
 	  }
 	  
 	  String userSuffix = plugin.chat.getPlayerSuffix(player);
+	  if (groupSuffixes.contains(userSuffix)) userSuffix = ""; // b/c sometimes Vault decides to return a group suffix as the user suffix
+	  
 	  if (userSuffix.equals("")) return groupSuffix;
 	  if (groupSuffix.equals("")) return userSuffix;
 	  if (!SimplePrefix.multiSuffix) return userSuffix;
@@ -169,7 +179,7 @@ public class Config
         if (SimplePrefix.debug) SimplePrefix.log.info("[" + SimplePrefix.pluginName + "] DEBUG: Player has permission for the '" + group + "' prefix/suffix group");
         if ((type.equals("prefix") && SimplePrefix.multiPrefix.booleanValue()) || (type.equals("suffix") && SimplePrefix.multiSuffix.booleanValue())) {
         	String tier = config.getString("Group." + group + ".tier");
-        	if (!usedTiers.contains(tier)){
+        	if (tier == null || tier.equals("") || !usedTiers.contains(tier)){
 	        	if (prefixSuffix.equals("")) prefixSuffix = config.getString("Group." + group + "." + type);
 	        	else {
 	        		if (type.equals("prefix")) prefixSuffix = prefixSuffix + SimplePrefix.multiPrefixSeparator + config.getString("Group." + group + "." + type);
