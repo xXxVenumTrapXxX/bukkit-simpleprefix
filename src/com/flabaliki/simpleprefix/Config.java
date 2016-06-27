@@ -75,7 +75,6 @@ public class Config
 		  } else if (configversion.equals("2.4.1") || configversion.equals("2.5.0")){
 			  config.set("Use-UUID", true);
 		  }
-		  config.set("bungeecord", null); // ????
 	  }
 	  config.set("Version", "2.5.1");
 	  plugin.saveConfig();
