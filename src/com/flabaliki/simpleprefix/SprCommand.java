@@ -81,14 +81,14 @@ public class SprCommand implements CommandExecutor
         if (((sender.hasPermission("simpleprefix.command.editOwn")) || (sender.hasPermission("simpleprefix.command.*"))) && (prefixalias.contains(args[0].toLowerCase()))) {
         	if (plugin.useVault) return vaultMessage(sender);
             changeMessage(sender, "Prefix", "remove", "user", sender.getName(), "");
-        	setUserPrefix(sender.getName(), "");
+        	setUserPrefix(sender, sender.getName(), "");
         	return true;
         }
 
         if (((sender.hasPermission("simpleprefix.command.editOwn")) || (sender.hasPermission("simpleprefix.command.*"))) && (suffixalias.contains(args[0].toLowerCase()))) {
         	if (plugin.useVault) return vaultMessage(sender);
             changeMessage(sender, "Suffix", "remove", "user", sender.getName(), "");
-        	setUserSuffix(sender.getName(), "");
+        	setUserSuffix(sender, sender.getName(), "");
         	return true;
         }
       }
@@ -101,14 +101,14 @@ public class SprCommand implements CommandExecutor
         if (((sender.hasPermission("simpleprefix.command.editOwn")) || (sender.hasPermission("simpleprefix.command.*"))) && (prefixalias.contains(args[0].toLowerCase()))) {
         	if (plugin.useVault) return vaultMessage(sender);
         	changeMessage(sender, "Prefix", "set", "user", sender.getName(), args[1]);
-        	setUserPrefix(sender.getName(), args[1]);
+        	setUserPrefix(sender, sender.getName(), args[1]);
         	return true;
         }
 
         if (((sender.hasPermission("simpleprefix.command.editOwn")) || (sender.hasPermission("simpleprefix.command.*"))) && (suffixalias.contains(args[0].toLowerCase()))) {
         	if (plugin.useVault) return vaultMessage(sender);
         	changeMessage(sender, "Suffix", "set", "user", sender.getName(), args[1]);
-        	setUserSuffix(sender.getName(), args[1]);
+        	setUserSuffix(sender, sender.getName(), args[1]);
         	return true;
         }
       }
@@ -139,14 +139,14 @@ public class SprCommand implements CommandExecutor
       if (((sender.hasPermission("simpleprefix.command.editUser")) || (sender.hasPermission("simpleprefix.command.*"))) && (prefixalias.contains(args[0].toLowerCase())) && (useralias.contains(args[1].toLowerCase()))) {
     	  if (plugin.useVault) return vaultMessage(sender);
     	  changeMessage(sender, "Prefix", "remove", "user", args[2], "");
-    	  setUserPrefix(args[2], "");
+    	  setUserPrefix(sender, args[2], "");
     	  return true;
       }
 
       if (((sender.hasPermission("simpleprefix.command.editUser")) || (sender.hasPermission("simpleprefix.command.*"))) && (suffixalias.contains(args[0].toLowerCase())) && (useralias.contains(args[1].toLowerCase()))) {
     	  if (plugin.useVault) return vaultMessage(sender);
     	  changeMessage(sender, "Suffix", "remove", "user", args[2], "");
-    	  setUserSuffix(args[2], "");
+    	  setUserSuffix(sender, args[2], "");
     	  return true;
       }
 
@@ -194,7 +194,7 @@ public class SprCommand implements CommandExecutor
           }
         }
         changeMessage(sender, "Prefix", "set", "user", args[2], prefix);
-        setUserPrefix(args[2], prefix);
+        setUserPrefix(sender, args[2], prefix);
         return true;
       }
 
@@ -207,7 +207,7 @@ public class SprCommand implements CommandExecutor
           }
         }
         changeMessage(sender, "Suffix", "set", "user", args[2], suffix);
-        setUserSuffix(args[2], suffix);
+        setUserSuffix(sender, args[2], suffix);
         return true;
       }
     }
@@ -258,32 +258,28 @@ public class SprCommand implements CommandExecutor
   }
   
   @SuppressWarnings("deprecation")
-  private void setUserPrefix(final String player, final String prefix){
-	  if (Bukkit.getOfflinePlayer(player).isOnline()){
-		  plugin.config.setPrefix("user", plugin.uuids.get(player), prefix);
+  private void setUserPrefix(CommandSender sender, final String player, final String prefix){
+	  if (!SimplePrefix.useUUID){
+		  plugin.config.setPrefix("user", player, prefix);
 	  } else {
-	        plugin.scheduler.scheduleAsyncDelayedTask(plugin, new Runnable() {
-	            @Override
-	            public void run(){
-	      		    String uuid = plugin.fetchUUID(player).toString();
-	        		plugin.config.setPrefix("user", uuid, prefix);
-	            }
-	        }, 0L);
+		  if (Bukkit.getOfflinePlayer(player).isOnline()){
+			  plugin.config.setPrefix("user", plugin.uuids.get(player), prefix);
+		  } else {
+		      sender.sendMessage(ChatColor.RED + "The player must be online!");
+		  }
 	  }
   }
   
   @SuppressWarnings("deprecation")
-  private void setUserSuffix(final String player, final String suffix){
-	  if (Bukkit.getOfflinePlayer(player).isOnline()){
-		  plugin.config.setSuffix("user", plugin.uuids.get(player), suffix);
+  private void setUserSuffix(CommandSender sender, final String player, final String suffix){
+	  if (!SimplePrefix.useUUID){
+		  plugin.config.setPrefix("user", player, suffix);
 	  } else {
-	        plugin.scheduler.scheduleAsyncDelayedTask(plugin, new Runnable() {
-	            @Override
-	            public void run(){
-	            	String uuid = plugin.fetchUUID(player).toString();
-	        		plugin.config.setSuffix("user", uuid, suffix);
-	            }
-	        }, 0L);
+		  if (Bukkit.getOfflinePlayer(player).isOnline()){
+			  plugin.config.setSuffix("user", plugin.uuids.get(player), suffix);
+		  } else {
+			  sender.sendMessage(ChatColor.RED + "The player must be online!");
+		  }
 	  }
   }
 }

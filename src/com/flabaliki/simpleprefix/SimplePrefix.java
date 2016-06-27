@@ -1,17 +1,11 @@
 package com.flabaliki.simpleprefix;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.InputStreamReader;
-import java.net.URL;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Logger;
-
-import net.milkbowl.vault.chat.Chat;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -24,6 +18,8 @@ import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitScheduler;
+
+import net.milkbowl.vault.chat.Chat;
 
 public class SimplePrefix extends JavaPlugin implements Listener
 {
@@ -46,6 +42,7 @@ public class SimplePrefix extends JavaPlugin implements Listener
   boolean useVault = false;
   static Boolean debug;
   static Boolean allowOps;
+  static Boolean useUUID = true;
 
   public void onEnable()
   {
@@ -58,7 +55,7 @@ public class SimplePrefix extends JavaPlugin implements Listener
     getCommand("spr").setExecutor(commands);
     scheduler = Bukkit.getScheduler();
     
-    if (Bukkit.getOnlinePlayers().size() > 0){
+    if (useUUID && Bukkit.getOnlinePlayers().size() > 0){
 		for (Player p : Bukkit.getOnlinePlayers()){
  		   uuids.put(p.getName(), p.getUniqueId().toString());
     	}
@@ -111,27 +108,10 @@ public class SimplePrefix extends JavaPlugin implements Listener
   
   @EventHandler
   public void onPreLogin(AsyncPlayerPreLoginEvent event){
-	  uuids.put(event.getName(), event.getUniqueId().toString());
+	  if (useUUID) uuids.put(event.getName(), event.getUniqueId().toString());
   }
 
   public static void message(String message, CommandSender sender) {
 	  sender.sendMessage(ChatColor.AQUA + "[" + pluginName + "] " + ChatColor.WHITE + message);
-  }
-  
-  public UUID fetchUUID(String username){
-	  try {
-		  URL url = new URL("http://api.mcusername.net/playertouuid/" + username);
-	      BufferedReader in = new BufferedReader(new InputStreamReader(url.openStream()));
-	      String uuidStr = in.readLine();
-	      UUID uuid = getUUID(uuidStr);
-	      return uuid;
-	  } catch (Exception e){
-		  e.printStackTrace();
-	  }
-	  return null;
-  }
-  
-  public UUID getUUID(String id) {
-      return UUID.fromString(id.substring(0, 8) + "-" + id.substring(8, 12) + "-" + id.substring(12, 16) + "-" + id.substring(16, 20) + "-" +id.substring(20, 32));
   }
 }

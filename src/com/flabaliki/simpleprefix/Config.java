@@ -38,7 +38,6 @@ public class Config
 		  config = plugin.getConfig();
 		  String configversion = config.getString("Version");
 		  if (configversion == null){
-			  SimplePrefix.log.info("\n====================\nMigrating the SimplePrefix user data\nto the UUID system. This may freeze the\nserver until it is finished.\n====================");
 			  config.set("Template.multiSuffix", false);
 			  config.set("Template.multiPrefixSeparator", "&r, ");
 			  config.set("Template.multiSuffixSeparator", "&r-");
@@ -46,7 +45,10 @@ public class Config
 			  config.set("Auto-Update", true);
 			  config.set("debug-mode", false);
 			  config.set("OPs-have-all", true);
+			  config.set("Use-UUID", true);
 			  
+			  // I doubt this is necessary anymore. Removing it because fetchUUID function has been removed.
+			  /*SimplePrefix.log.info("\n====================\nMigrating the SimplePrefix user data\nto the UUID system. This may freeze the\nserver until it is finished.\n====================");
 			  for (String key : config.getConfigurationSection("User").getKeys(false)){
 				  String uuid = plugin.fetchUUID(key).toString();
 				  String prefix = config.getString("User." + key + ".prefix");
@@ -54,21 +56,26 @@ public class Config
 				  config.set("User." + key, null);
 				  config.set("User." + uuid + ".prefix", prefix);
 				  config.set("User." + uuid + ".suffix", suffix);
-			  }
+			  }*/
 		  } else if (configversion.equals("2.3")){
 			  config.set("Auto-Update", true);
 			  config.set("Use-Vault", false);
 			  config.set("debug-mode", false);
 			  config.set("OPs-have-all", true);
+			  config.set("Use-UUID", true);
 		  } else if (configversion.equals("2.3.1") || configversion.equals("2.3.2") || configversion.equals("2.3.3") || configversion.equals("2.3.4")){
 			  config.set("Use-Vault", false);
 			  config.set("debug-mode", false);
 			  config.set("OPs-have-all", true);
+			  config.set("Use-UUID", true);
 		  } else if (configversion.equals("2.3.5") || configversion.equals("2.4.0")){
 			  config.set("debug-mode", false);
 			  config.set("OPs-have-all", true);
+			  config.set("Use-UUID", true);
+		  } else if (configversion.equals("2.4.1") || configversion.equals("2.5.0")){
+			  config.set("Use-UUID", true);
 		  }
-		  config.set("bungeecord", null);
+		  config.set("bungeecord", null); // ????
 	  }
 	  config.set("Version", "2.5.1");
 	  plugin.saveConfig();
@@ -86,6 +93,13 @@ public class Config
     SimplePrefix.autoupdate = Boolean.valueOf(config.getBoolean("Auto-Update"));
     SimplePrefix.debug = Config.config.getBoolean("debug-mode");
     SimplePrefix.allowOps = Config.config.getBoolean("OPs-have-all");
+    SimplePrefix.useUUID = Config.config.getBoolean("Use-UUID");
+    
+    if (!SimplePrefix.useUUID && config.getString("User.069a79f4-44e9-4726-a5be-fca90e38aaf5.prefix") != null){
+    	config.set("User.069a79f4-44e9-4726-a5be-fca90e38aaf5", null);
+    	config.set("User.Notch.prefix", "&c[Notch]&f");
+    }
+    
     plugin.saveConfig();
   }
 
@@ -196,7 +210,7 @@ public class Config
     player.setMetadata(type, new FixedMetadataValue(plugin, prefixSuffix));
 
     if (config.get("User") != null) {
-    	String data;
+      String data;
       if (plugin.uuids.containsKey(player.getName()) && config.getConfigurationSection("User").contains(plugin.uuids.get(player.getName()))){
     	  data = config.getString("User." + plugin.uuids.get(player.getName()) + "." + type);
       } else {

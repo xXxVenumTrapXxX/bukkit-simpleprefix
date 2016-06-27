@@ -2,6 +2,7 @@ Auto-Update: true
 Use-Vault: false
 debug-mode: false
 OPs-have-all: false
+Use-UUID: true
 Template:
   format: '<[time] [world] [prefix][name][suffix]> '
   time: '[h:mm aa]'
