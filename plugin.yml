@@ -1,6 +1,6 @@
 name: SimplePrefix
 main: com.flabaliki.simpleprefix.SimplePrefix
-version: 2.5.0
+version: 2.5.1
 authors: [Flabaliki, chaseoes, BaranCODE]
 description: Easy prefixes & suffixes
 website: http://dev.bukkit.org/bukkit-plugins/simple-prefix/

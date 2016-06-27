@@ -34,7 +34,6 @@ public class Config
 	  if (!file.exists()){
 		  plugin.saveDefaultConfig();
 		  config = plugin.getConfig();
-		  config.set("Version", "2.4.2");
 	  } else {
 		  config = plugin.getConfig();
 		  String configversion = config.getString("Version");
@@ -68,11 +67,10 @@ public class Config
 		  } else if (configversion.equals("2.3.5") || configversion.equals("2.4.0")){
 			  config.set("debug-mode", false);
 			  config.set("OPs-have-all", true);
-		  } else if (configversion.equals("2.4.1")){
 		  }
 		  config.set("bungeecord", null);
-		  config.set("Version", "2.5.0");
 	  }
+	  config.set("Version", "2.5.1");
 	  plugin.saveConfig();
 	  loadKeys();
   }
